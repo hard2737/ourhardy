@@ -14,7 +14,7 @@ export default function Home() {
           priority
         />
         <div className={styles.intro}>
-          this space intentionally left blank
+          This space intentionally left blank
         </div>
       </main>
       <footer className={styles.footer}>
