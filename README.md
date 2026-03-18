@@ -153,7 +153,13 @@ CACHE_CLEAR_SECRET=<random secret for the clear-cache script>
 	- [x] `aws cloudfront publish-function --name add-cors-headers --if-match $(aws cloudfront describe-function --name add-cors-headers --profile ourhardy --query 'ETag' --output text) --profile ourhardy`
 	- [x] `aws cloudfront get-distribution-config --id E359Q5YGQ4LUI6 --profile ourhardy --output json > dist-config.json`
 	- [x] Added `FunctionAssociations` to `DefaultCacheBehavior` via Python + `aws cloudfront update-distribution --id E359Q5YGQ4LUI6 --if-match E3JWKAKR8XB7XF` — deployed to Default (*) behavior (function guards internally on `/aux/`)
-	- [ ] test: `aws cloudfront get-distribution --id E359Q5YGQ4LUI6 --profile ourhardy --output json --query 'Distribution.Status' --output text`
+	- [x] test: `aws cloudfront get-distribution --id E359Q5YGQ4LUI6 --profile ourhardy --output json --query 'Distribution.Status' --output text`
+- [x] Initial deploy via `vercel --prod` — failed with 500 due to `URIError: URI malformed` in `parseKey` (S3 keys are raw strings, not URL-encoded; `decodeURIComponent` blew up on filenames containing `%`). Fixed by removing `decodeURIComponent` calls in `src/lib/trackCache.ts`.
+- [x] Redeployed via `vercel --prod` — live at https://app.ourhardy.com/aux
+
+### How the track keys work
+
+S3 returns object keys as raw strings (e.g. `aux/x/Björk/Debut/01 Human Behaviour.mp3`). `parseKey` in `src/lib/trackCache.ts` splits on `/`, strips the `aux/x/` prefix, and maps the remaining segments to `artist / album / title`. Do not use `decodeURIComponent` on these — the keys are not percent-encoded.
 
 ### Clearing the Track Cache
 

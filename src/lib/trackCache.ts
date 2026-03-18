@@ -41,11 +41,9 @@ function parseKey(key: string): Track {
   const hasAlbum = parts.length >= 3
   return {
     key,
-    artist: decodeURIComponent(parts[0] ?? "Unknown"),
-    album: hasAlbum ? decodeURIComponent(parts[1] ?? "") : "",
-    title: decodeURIComponent(
-      parts.slice(hasAlbum ? 2 : 1).join("/").replace(/\.[^.]+$/, "")
-    ),
+    artist: parts[0] ?? "Unknown",
+    album: hasAlbum ? (parts[1] ?? "") : "",
+    title: parts.slice(hasAlbum ? 2 : 1).join("/").replace(/\.[^.]+$/, ""),
     url: `${CDN}/${key}`,
   }
 }
