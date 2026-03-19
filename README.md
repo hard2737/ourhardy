@@ -48,15 +48,31 @@ https://medium.com/@andyasprou/how-to-use-vercel-and-route-53-for-your-root-doma
 
 ## /aux — Music Player
 
-Lightweight SPA music player at `https://app.ourhardy.com/aux`. Streams from `s3://ourhardy.com/aux/x/` via CloudFront (`https://www.ourhardy.com/aux/x/`). Supports search, offline playback, and local audio caching via the browser Cache API.
+Lightweight SPA music player at `https://app.ourhardy.com/aux`. Streams from `s3://ourhardy.com/aux/x/` via CloudFront (`https://www.ourhardy.com/aux/x/`). Supports search, offline playback, and local audio caching via IndexedDB.
 
 ### Architecture
 
 - **Track listing** — `src/lib/trackCache.ts` crawls S3 `aux/x/` on first request and caches the result for 30 days using Next.js `"use cache"` (Vercel Data Cache). No external store required.
 - **Search** — client-side filter over the full track list embedded in the page on load.
-- **Audio caching** — tracks are cached in the browser Cache API (`aux-audio-v1`) when played and served as blob URLs offline. Play counts tracked in `localStorage`.
-- **Offline view** — "cached" tab in the player lists all locally cached tracks with cache size and per-track removal.
-- **Service worker** — `public/sw.js` caches the app shell (`/aux`) for offline access.
+- **Audio caching** — `src/lib/audioDb.ts` stores raw audio blobs in IndexedDB (`aux-audio-db`). Tracks are fetched with streaming progress and written to IDB on completion. Play counts tracked in `localStorage`.
+- **Playback from cache** — cached tracks are served via `URL.createObjectURL(blob)`. The previous object URL is revoked each time a new one is created (and on unmount) to avoid memory leaks. Tracks not yet cached stream directly from CloudFront and are downloaded to IDB in the background.
+- **Audio element CORS** — the `<audio>` element does **not** use `crossOrigin="anonymous"`. That attribute causes the browser to send an `Origin` header with every media request; CloudFront's CORS policy only allows `https://app.ourhardy.com`, so any other origin (including `localhost`) would receive a CORS rejection surfaced as `MEDIA_ERR_SRC_NOT_SUPPORTED`. Since WebAudio API canvas access is not required, omitting the attribute lets the browser make a plain (non-CORS) request that CloudFront serves without restriction.
+- **Explicit offline download** — each track row shows a `↓` button (visible on hover) that downloads the track to IDB with a live `n%` progress indicator. No need to play a track first.
+- **Persistent storage** — `navigator.storage.persist()` is requested on mount so the browser does not evict the IndexedDB store under storage pressure.
+- **Offline view** — "cached" tab lists all locally stored tracks with total size and per-track removal.
+- **Service worker** — `public/sw.js` caches the app shell (`/aux`) for offline access. Audio blobs are managed by `audioDb.ts`, not the service worker.
+
+### Why IndexedDB over Cache API
+
+| | Cache API (old) | IndexedDB (current) |
+|---|---|---|
+| Eviction | Browser may evict silently | Persistent with `storage.persist()` |
+| Download progress | Not possible | Streaming `ReadableStream` reader |
+| Explicit pre-download | Not possible | ✓ |
+| Storage control | Opaque HTTP responses | Raw blobs, queryable metadata |
+| Playback | Direct URL or blob URL | `URL.createObjectURL(blob)` |
+
+The one caveat with `URL.createObjectURL`: the object URL must be revoked when no longer needed or the backing memory is never freed. `AuxPlayer.tsx` tracks the active URL in a ref (`blobUrlRef`) and revokes it on every track switch and on component unmount.
 
 - TODO
 - [ ] get these back

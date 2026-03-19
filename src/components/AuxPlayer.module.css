@@ -172,10 +172,74 @@
   color: #cc4444;
 }
 
-.spinner {
+.downloadBtn {
+  background: none;
+  border: none;
+  color: #3a6a3a;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.track:hover .downloadBtn {
+  opacity: 1;
+}
+
+.downloadBtn:hover {
+  color: #5aaa5a;
+}
+
+.progress {
+  color: #3a6a3a;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.browseItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #111;
+  gap: 8px;
+}
+
+.browseItem:hover {
+  background: #141414;
+}
+
+.browseLabel {
+  color: #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browseCount {
+  color: #444;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.breadcrumb {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #1a1a1a;
   color: #555;
-  font-size: 16px;
-  letter-spacing: 2px;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 8px 14px;
+  text-align: left;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.breadcrumb:hover {
+  color: #888;
 }
 
 .empty {
@@ -222,4 +286,24 @@
   flex: 1;
   height: 32px;
   accent-color: #4a9eff;
+}
+
+.shuffleBtn {
+  background: none;
+  border: none;
+  color: #444;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 15px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+
+.shuffleBtn:hover {
+  color: #888;
+}
+
+.shuffleActive {
+  color: #4a9eff;
 }

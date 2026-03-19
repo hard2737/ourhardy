@@ -1,5 +1,5 @@
 // Service worker — caches app shell for offline support.
-// Audio files are cached directly by AuxPlayer.tsx via the Cache API.
+// Audio files are stored in IndexedDB (aux-audio-db) by AuxPlayer.tsx — not here.
 
 const SHELL_CACHE = "aux-shell-v1"
 const SHELL_ASSETS = ["/aux", "/aux/"]
