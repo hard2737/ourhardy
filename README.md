@@ -61,6 +61,7 @@ Lightweight SPA music player at `https://app.ourhardy.com/aux`. Streams from `s3
 - **Persistent storage** — `navigator.storage.persist()` is requested on mount so the browser does not evict the IndexedDB store under storage pressure.
 - **Offline view** — "cached" tab lists all locally stored tracks with total size and per-track removal.
 - **Service worker** — `public/sw.js` caches the app shell (`/aux`) for offline access. Audio blobs are managed by `audioDb.ts`, not the service worker.
+- **Registration & access control** — new users submit a request via the login page; `POST /api/auth/register` records them in the `registrations` table. `POST /api/auth/request-otp` gates on user existence and returns `403 { code: "NOT_REGISTERED" }` for unrecognised emails (bypassed for admin). The admin "access" tab in AuxPlayer lists pending requests with approve/deny buttons (`PATCH /api/registrations/[id]`); a badge on the tab shows the pending count. Approval emails are sent via `lib/email.ts` (`sendApprovalEmail`); new registration notifications go to `ADMIN_EMAIL` (`sendRegistrationNotification`). Email addresses are validated on submission using `src/lib/emailValidation.ts` (MX check, disposable domain blocklist, bot pattern detection).
 
 ### Why IndexedDB over Cache API
 
@@ -138,16 +139,90 @@ mp3
 The specified key does not exist.
 
 
-### Vercel Environment Variables
+### CLI Tools
 
-Set these in the Vercel project dashboard (Settings → Environment Variables):
+| Tool | Install | Purpose |
+|---|---|---|
+| Vercel CLI | `npm i -g vercel` | Deploy, manage env vars, inspect project |
+| Neon CLI | `npm i -g neonctl` | Manage Neon Postgres projects, branches, connection strings |
 
+```bash
+# Verify auth / current state
+vercel whoami
+vercel env ls
+neonctl me
+neonctl projects list --org-id org-green-pond-68012790
 ```
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-AWS_REGION=us-west-2
-CACHE_CLEAR_SECRET=<random secret for the clear-cache script>
+
+### Neon Database
+
+**Project:** guinnessDB (`empty-star-16173401`) — `org-green-pond-68012790` (Vercel: David Hardy's projects)
+**Region:** `aws-us-west-2` — matches Vercel deployment region
+**Database:** `neondb` · **Branch:** `main` (`br-ancient-moon-afxuubgl`)
+
+```bash
+# Get connection strings
+neonctl connection-string \
+  --project-id empty-star-16173401 \
+  --org-id org-green-pond-68012790           # direct (non-pooled)
+
+neonctl connection-string \
+  --project-id empty-star-16173401 \
+  --org-id org-green-pond-68012790 \
+  --pooled                                   # pooled — use this for POSTGRES_URL
 ```
+
+Neon databases are plain Postgres instances. They are **not owned by or attached to a Vercel project** — multiple projects can share the same database. Linking is just adding the connection string as `POSTGRES_URL`.
+
+```bash
+# Test connection (confirm tables exist after migration)
+node --input-type=module --env-file=.env.local <<'EOF'
+import postgres from './node_modules/postgres/src/index.js'
+const sql = postgres(process.env.POSTGRES_URL, { ssl: 'require', max: 1 })
+const tables = await sql`
+  SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename
+`
+console.log('Tables:', tables.map(r => r.tablename).join(', '))
+await sql.end()
+EOF
+# Expected output: Tables: otps, playlist_tracks, playlists, users
+```
+
+### Environment Variables
+
+All vars confirmed set. `AWS_PROFILE` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` are consumed directly by the AWS SDK — not referenced via `process.env` in code. `VERCEL_URL` is injected automatically by Vercel.
+
+| Variable | Used in | Notes |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | `sitemap.ts`, `robots.ts` | Falls back to `VERCEL_URL` then hardcoded URL |
+| `AWS_REGION` | `lib/trackCache.ts` | |
+| `AWS_PROFILE` | AWS SDK (local dev) | Named profile — alternative to static keys |
+| `AWS_ACCESS_KEY_ID` | AWS SDK (production) | Set in Vercel Production only |
+| `AWS_SECRET_ACCESS_KEY` | AWS SDK (production) | Set in Vercel Production only |
+| `POSTGRES_URL` | `lib/db.ts`, `scripts/db-migrate.ts` | Pooled Neon connection string |
+| `SMTP_HOST` | `lib/email.ts` | |
+| `SMTP_PORT` | `lib/email.ts` | |
+| `SMTP_USER` | `lib/email.ts` | |
+| `SMTP_PASS` | `lib/email.ts` | Gmail App Password |
+| `SMTP_FROM` | `lib/email.ts` | Address only — display name "Captain Shitbag" is hardcoded |
+| `ADMIN_EMAIL` | `aux/page.tsx`, `api/playlists/*`, `api/cache/clear`, `api/registrations/*`, `api/auth/register` | Determines admin vs regular user; also receives registration notification emails |
+| `SESSION_SECRET` | `lib/session.ts` | JWT signing key — `openssl rand -base64 32` |
+
+**Vercel state** (`vercel env ls`):
+
+| Variable | Production | Preview | Development |
+|---|---|---|---|
+| `POSTGRES_URL` | ✅ | ✅ | ✅ |
+| `AWS_ACCESS_KEY_ID` | ✅ | — | — |
+| `AWS_SECRET_ACCESS_KEY` | ✅ | — | — |
+| `AWS_REGION` | ✅ | — | — |
+| `SMTP_HOST` | ✅ | ✅ | ✅ |
+| `SMTP_PORT` | ✅ | ✅ | ✅ |
+| `SMTP_USER` | ✅ | ✅ | ✅ |
+| `SMTP_PASS` | ✅ | ✅ | ✅ |
+| `SMTP_FROM` | ✅ | ✅ | ✅ |
+| `ADMIN_EMAIL` | ✅ | ✅ | ✅ |
+| `SESSION_SECRET` | ✅ | ✅ | ✅ |
 
 ### Deployment Checklist
 
@@ -177,17 +252,16 @@ CACHE_CLEAR_SECRET=<random secret for the clear-cache script>
 
 S3 returns object keys as raw strings (e.g. `aux/x/Björk/Debut/01 Human Behaviour.mp3`). `parseKey` in `src/lib/trackCache.ts` splits on `/`, strips the `aux/x/` prefix, and maps the remaining segments to `artist / album / title`. Do not use `decodeURIComponent` on these — the keys are not percent-encoded.
 
+### Registration & Access
+
+New users cannot request an OTP until they have been approved. The flow:
+
+1. User visits `/aux` → redirected to `/login`.
+2. They enter an email that isn't in the `users` table. The login page detects the `NOT_REGISTERED` response from `POST /api/auth/request-otp` and switches to a "request access" step.
+3. User submits the form → `POST /api/auth/register` validates the address via `src/lib/emailValidation.ts` (MX lookup, disposable domain blocklist, bot pattern detection), writes a row to the `registrations` table, and emails `ADMIN_EMAIL` via `sendRegistrationNotification`.
+4. The admin signs in and opens the "access" tab in AuxPlayer. A badge on the tab reflects the number of pending requests. Each row has Approve / Deny buttons that call `PATCH /api/registrations/[id]`.
+5. On approval the user is inserted into the `users` table and `sendApprovalEmail` notifies them that they now have access.
+
 ### Clearing the Track Cache
 
-The track listing is cached for 30 days. To force a refresh (e.g. after adding files to S3):
-
-```bash
-APP_URL=https://app.ourhardy.com CACHE_CLEAR_SECRET=<secret> npx tsx scripts/clear-cache.ts
-```
-
-Or directly via curl:
-
-```bash
-curl -X POST https://app.ourhardy.com/api/cache/clear \
-  -H "x-cache-secret: <secret>"
-```
+The track listing is cached for 30 days. To force a refresh after adding or removing files in S3, use the `↺` button in the `/aux` header — visible only when signed in as the admin. It calls `POST /api/cache/clear` (admin session required), invalidates the `aux-tracks` Vercel Data Cache tag, and reloads the page.

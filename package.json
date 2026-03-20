@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1011.0",
+    "@types/nodemailer": "^7.0.11",
+    "jose": "^6.2.2",
     "marked": "^17.0.4",
     "next": "16.1.6",
+    "nodemailer": "^8.0.3",
+    "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -20,6 +24,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "typescript": "^5"

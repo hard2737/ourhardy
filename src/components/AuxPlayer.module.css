@@ -8,6 +8,30 @@
   font-size: 13px;
 }
 
+.toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 3px;
+  pointer-events: none;
+  animation: fadeInOut 2.5s ease forwards;
+  z-index: 100;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -287,6 +311,363 @@
   height: 32px;
   accent-color: #4a9eff;
 }
+
+.signOutBtn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 3px 6px;
+  margin-left: 4px;
+  transition: color 0.1s;
+}
+
+.signOutBtn:hover {
+  color: #666;
+}
+
+.refreshBtn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 3px 6px;
+  transition: color 0.1s;
+}
+
+.refreshBtn:hover {
+  color: #666;
+}
+
+.refreshBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.refreshConfirm {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.refreshConfirmInput {
+  background: #111;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  outline: none;
+  border-radius: 3px;
+  width: 90px;
+}
+
+.refreshConfirmInput:focus {
+  border-color: #555;
+}
+
+.refreshConfirmInput::placeholder {
+  color: #444;
+}
+
+.refreshConfirmOk {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  transition: color 0.1s;
+}
+
+.refreshConfirmOk:not(:disabled):hover {
+  color: #888;
+}
+
+.refreshConfirmOk:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── add-to-playlist button ── */
+
+.addBtn {
+  background: none;
+  border: none;
+  color: #444;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.track:hover .addBtn {
+  opacity: 1;
+}
+
+.addBtnActive {
+  opacity: 1 !important;
+  color: #4a9eff;
+}
+
+/* ── playlist add-menu dropdown ── */
+
+.playlistMenu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 14px 6px 0;
+  width: 100%;
+  border-top: 1px solid #181818;
+  margin-top: 4px;
+}
+
+.playlistMenuItem {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.playlistMenuItem:hover {
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.playlistMenuEmpty {
+  color: #444;
+  font-size: 11px;
+}
+
+/* ── playlist list view ── */
+
+.playlistMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.globalBadge {
+  font-size: 10px;
+  color: #4a9eff;
+  border: 1px solid #1a3a5a;
+  padding: 0 4px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.globalToggleBtn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.browseItem:hover .globalToggleBtn {
+  opacity: 1;
+}
+
+.globalToggleBtn:hover {
+  color: #4a9eff;
+}
+
+/* ── new playlist form ── */
+
+.newPlaylistTrigger {
+  padding: 10px 14px;
+  color: #444;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #111;
+}
+
+.newPlaylistTrigger:hover {
+  color: #888;
+  background: #141414;
+}
+
+.newPlaylistRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #111;
+}
+
+.newPlaylistInput {
+  background: #111;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+  outline: none;
+  border-radius: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.newPlaylistInput:focus {
+  border-color: #555;
+}
+
+.newPlaylistInput::placeholder {
+  color: #444;
+}
+
+.globalToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.newPlaylistSave,
+.newPlaylistCancel {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+
+.newPlaylistSave {
+  color: #3a6a3a;
+}
+
+.newPlaylistSave:disabled {
+  color: #2a2a2a;
+  cursor: default;
+}
+
+.newPlaylistCancel {
+  color: #444;
+}
+
+.newPlaylistCancel:hover {
+  color: #cc4444;
+}
+
+/* ── access / registrations ── */
+
+.addUserRow {
+  padding: 8px 14px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.addUserForm {
+  display: flex;
+  gap: 6px;
+}
+
+.addUserInput {
+  background: #111;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+  outline: none;
+  border-radius: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.addUserInput:focus { border-color: #555; }
+.addUserInput::placeholder { color: #444; }
+
+.addUserBtn {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  transition: border-color 0.1s, color 0.1s;
+  flex-shrink: 0;
+}
+
+.addUserBtn:hover:not(:disabled) { border-color: #555; color: #e0e0e0; }
+.addUserBtn:disabled { color: #444; cursor: default; }
+
+.regRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #111;
+}
+
+.regEmail {
+  flex: 1;
+  color: #e0e0e0;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.regStatus {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.reg_pending  { color: #888;   border: 1px solid #333; }
+.reg_approved { color: #3a6a3a; border: 1px solid #1a3a1a; }
+.reg_denied   { color: #5a2a2a; border: 1px solid #3a1a1a; }
+
+.regActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.regApprove {
+  background: none;
+  border: none;
+  color: #3a6a3a;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 5px;
+  transition: color 0.1s;
+}
+
+.regApprove:hover { color: #5aaa5a; }
+
+.regDeny {
+  background: none;
+  border: none;
+  color: #444;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 5px;
+  transition: color 0.1s;
+}
+
+.regDeny:hover { color: #cc4444; }
 
 .shuffleBtn {
   background: none;
