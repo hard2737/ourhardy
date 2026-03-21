@@ -4,6 +4,13 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./WodPlayer.module.css"
 
+// ── BeforeInstallPromptEvent (not in TS built-ins) ────────────────────────
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
+}
+
 // ── types ──────────────────────────────────────────────────────────────────
 
 interface User {
@@ -152,7 +159,8 @@ type View = "today" | "feed" | "board" | "prs" | "profile" | "admin" | "notifica
 // ── helpers ────────────────────────────────────────────────────────────────
 
 function fmtDate(d: string) {
-  return new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  const iso = d.includes("T") ? d : d + "T00:00:00"
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" })
 }
 
 function fmtDateTime(d: string) {
@@ -811,6 +819,42 @@ export default function WodPlayer({
     return () => navigator.serviceWorker.removeEventListener("message", handler)
   })
 
+  // ── PWA install prompt ───────────────────────────────────────────────
+
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
+  const [showInstallBanner, setShowInstallBanner] = useState(false)
+
+  useEffect(() => {
+    // Don't show if already in standalone mode
+    if (window.matchMedia("(display-mode: standalone)").matches) return
+
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setInstallPrompt(e as BeforeInstallPromptEvent)
+      // Show banner if user hasn't dismissed it this session
+      if (!sessionStorage.getItem("swod-install-dismissed")) {
+        setShowInstallBanner(true)
+      }
+    }
+    window.addEventListener("beforeinstallprompt", handler)
+    return () => window.removeEventListener("beforeinstallprompt", handler)
+  }, [])
+
+  async function handleInstall() {
+    if (!installPrompt) return
+    installPrompt.prompt()
+    const { outcome } = await installPrompt.userChoice
+    if (outcome === "accepted") {
+      setShowInstallBanner(false)
+      setInstallPrompt(null)
+    }
+  }
+
+  function dismissInstallBanner() {
+    setShowInstallBanner(false)
+    sessionStorage.setItem("swod-install-dismissed", "1")
+  }
+
   // ── nav items ─────────────────────────────────────────────────────────
 
   const navItems: { key: View; icon: string; label: string }[] = [
@@ -846,6 +890,17 @@ export default function WodPlayer({
       </div>
 
       {!isOnline && <div className={styles.offlineBanner}>offline mode</div>}
+
+      {showInstallBanner && (
+        <div className={styles.installBanner}>
+          <div className={styles.installText}>
+            <strong>Install SmartWOD</strong>
+            <span>Add to home screen for the full app experience</span>
+          </div>
+          <button className={styles.installBtn} onClick={handleInstall}>Install</button>
+          <button className={styles.installDismiss} onClick={dismissInstallBanner}>✕</button>
+        </div>
+      )}
 
       {/* body */}
       <div className={styles.body}>

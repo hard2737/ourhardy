@@ -82,6 +82,71 @@
   letter-spacing: 0.5px;
 }
 
+/* ── install banner ── */
+
+.installBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 143, 85, 0.05));
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+  flex-shrink: 0;
+}
+
+.installText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.installText strong {
+  font-size: 14px;
+  color: #f0f0f0;
+}
+
+.installText span {
+  font-size: 12px;
+  color: #888;
+}
+
+.installBtn {
+  background: linear-gradient(135deg, #ff6b35, #ff8f55);
+  border: none;
+  color: #000;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  min-height: 36px;
+  transition: opacity 0.15s;
+}
+
+.installBtn:hover {
+  opacity: 0.9;
+}
+
+.installDismiss {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.installDismiss:hover {
+  color: #888;
+}
+
 /* ── body (scrollable) ── */
 
 .body {
