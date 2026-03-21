@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { LayoutProvider } from "@/lib/layoutProvider"
 import styles from "./login.module.css"
 
 type Step = "email" | "code" | "register" | "pending"
 
 export default function LoginForm({ redirectTo }: { redirectTo: string }) {
+  const layout = LayoutProvider.fromPath(redirectTo)
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
@@ -87,9 +89,9 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   }
 
   return (
-    <div className={styles.root}>
-      <div className={styles.box}>
-        <div className={styles.logo}>aux</div>
+    <div className={styles[layout.root]}>
+      <div className={styles[layout.box]}>
+        <div className={styles[layout.logo]}>{layout.title}</div>
 
         {step === "email" && (
           <form onSubmit={requestOtp} className={styles.form}>
@@ -143,7 +145,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
         {step === "pending" && (
           <div className={styles.form}>
             <p className={styles.hint}>request sent for {email}</p>
-            <p className={styles.hint}>you'll receive an email when it's approved.</p>
+            <p className={styles.hint}>you&apos;ll receive an email when it&apos;s approved.</p>
             <button type="button" className={styles.back} onClick={reset}>← back</button>
           </div>
         )}

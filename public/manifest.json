@@ -1,0 +1,17 @@
+{
+  "name": "SmartWOD",
+  "short_name": "SmartWOD",
+  "description": "Track workouts, log results, compete on the leaderboard",
+  "start_url": "/wod",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#ff6b35",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/wod-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/wod-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/wod-icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/wod-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

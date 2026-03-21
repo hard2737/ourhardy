@@ -1,0 +1,167 @@
+/* SmartWOD — Setup Page */
+
+.root {
+  min-height: 100dvh;
+  background: #0d0d0d;
+  color: #f0f0f0;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.brand {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ff6b35;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 28px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.label {
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.input,
+.textarea {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  color: #f0f0f0;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #ff6b35;
+}
+
+.inputValid {
+  border-color: #2a6a2a;
+}
+
+.inputInvalid {
+  border-color: #6a2a2a;
+}
+
+.textarea {
+  resize: none;
+  color: #aaa;
+}
+
+.hint {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.hint[data-valid] {
+  color: #3a8a3a;
+}
+
+.hint[data-invalid] {
+  color: #cc4444;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.genderRow {
+  display: flex;
+  gap: 8px;
+}
+
+.genderBtn {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  color: #666;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.15s;
+  min-height: 44px;
+}
+
+.genderActive {
+  border-color: #ff6b35;
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.08);
+}
+
+.error {
+  color: #cc4444;
+  font-size: 13px;
+  background: rgba(204, 68, 68, 0.08);
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #ff6b35, #ff8f55);
+  border: none;
+  color: #000;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 52px;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+}
+
+.submitBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+    gap: 18px;
+  }
+}

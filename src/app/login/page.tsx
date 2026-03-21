@@ -9,9 +9,11 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ from?: string }>
 }) {
-  const session = await getSession()
-  if (session) redirect("/aux")
-
   const { from } = await searchParams
-  return <LoginForm redirectTo={from ?? "/aux"} />
+  const dest = from ?? "/"
+
+  const session = await getSession()
+  if (session) redirect(dest)
+
+  return <LoginForm redirectTo={dest} />
 }

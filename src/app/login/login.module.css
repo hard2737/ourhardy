@@ -96,3 +96,77 @@
   font-size: 12px;
   margin: 0;
 }
+
+/* ── SmartWOD variant ── */
+
+.rootWod {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  background: #0d0d0d;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+.boxWod {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 340px;
+  padding: 0 20px;
+}
+
+.logoWod {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ff6b35;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.rootWod .input {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  color: #f0f0f0;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+
+.rootWod .input:focus {
+  border-color: #ff6b35;
+}
+
+.rootWod .btn {
+  background: linear-gradient(135deg, #ff6b35, #ff8f55);
+  border: none;
+  color: #000;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 12px;
+  min-height: 48px;
+}
+
+.rootWod .btn:disabled {
+  opacity: 0.4;
+  color: #000;
+}
+
+.rootWod .hint {
+  color: #666;
+  font-size: 13px;
+}
+
+.rootWod .back {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  color: #666;
+  font-size: 13px;
+}
+
+.rootWod .error {
+  font-size: 13px;
+}
